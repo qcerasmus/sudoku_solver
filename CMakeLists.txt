@@ -8,6 +8,12 @@ add_executable(sudoku_solver main.cpp)
 
 set_property(TARGET sudoku_solver PROPERTY CXX_STANDARD 17)
 
+add_custom_command(
+    TARGET sudoku_solver POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_SOURCE_DIR}/puzzle.txt
+            ${CMAKE_CURRENT_BINARY_DIR}/puzzle.txt)
+
 option(test "Builds unit tests and puts pedantic off for linux builds" OFF)
 if(test)
     enable_testing()

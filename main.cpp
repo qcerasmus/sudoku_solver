@@ -14,5 +14,9 @@ int main()
     solver s;
     s.load_puzzle(puzzle_name);
 
-    s.solve_puzzle();
+    if (s.solve_puzzle())
+	    std::cout << "Puzzle solved!\n" << s << '\n';
+    else
+	    std::cout << "Puzzle could not be solved\n";
+
 }
