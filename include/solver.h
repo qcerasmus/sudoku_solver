@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 /**
  * @brief This class is used to solve sudoku puzzles.
@@ -22,7 +23,7 @@ public:
      * @brief puzzle A 2 dimentional array to keep the values
      * of the puzzle in.
      */
-    int puzzle[SUDOKU_PUZZLE_SIZE + 1][SUDOKU_PUZZLE_SIZE + 1];
+    int puzzle[SUDOKU_PUZZLE_SIZE][SUDOKU_PUZZLE_SIZE];
 
     /**
      * @brief operator << Easy way to output the puzzle.
@@ -73,6 +74,20 @@ public:
     }
 
     /**
+     * @brief load_puzzle Overload for if you really want to send
+     * the array. In this case the puzzle is all one line which
+     * is converted to a 2D array.
+     * @param temp_puzzle The puzzle to test on.
+     */
+    void load_puzzle(std::vector<int> temp_puzzle)
+    {
+        for (auto i = 0; i < SUDOKU_PUZZLE_SIZE * SUDOKU_PUZZLE_SIZE; i++)
+        {
+            puzzle[i / SUDOKU_PUZZLE_SIZE][i % SUDOKU_PUZZLE_SIZE] = temp_puzzle[i];
+        }
+    }
+
+    /**
      * @brief solve_puzzle Solves the puzzle using recursion.
      * It will first find an empty spot and then try all possible values
      * at the x,y coordinate.
@@ -83,8 +98,9 @@ public:
      * If we didn't find a possible value further down, we will reset
      * the puzzle and try the next possible value.
      */
-    void solve_puzzle()
+    bool solve_puzzle()
     {
+        bool result = false;
         for (auto x = 0; x < SUDOKU_PUZZLE_SIZE; x++)
         {
             for (auto y = 0; y < SUDOKU_PUZZLE_SIZE; y++)
@@ -96,19 +112,20 @@ public:
                         if (possible_move(x, y, number_to_test))
                         {
                             puzzle[x][y] = number_to_test;
-                            solve_puzzle();
+                            result = solve_puzzle();
+                            if (result)
+                                return true;
                             puzzle[x][y] = 0;
                         }
                     }
 
-                    return;
+                    return result;
                 }
             }
         }
-        std::cout << *this << std::endl;
+        return true;
     }
 
-private:
     /**
      * @brief possible_move Checks if a value is possible in the
      * position given.
@@ -119,6 +136,10 @@ private:
      */
     bool possible_move(int x, int y, int number_to_test)
     {
+        if (x >= SUDOKU_PUZZLE_SIZE || y >= SUDOKU_PUZZLE_SIZE ||
+            x < 0 || y < 0)
+            return false;
+
         for (auto i = 0; i < SUDOKU_PUZZLE_SIZE; i++)
         {
             if (puzzle[x][i] == number_to_test)
